@@ -47,47 +47,11 @@
         let storage = firebase.storage();
         let storageRef = storage.ref()
         // end firebase root
-
-        $(document).ready(function() {
-    user_cobaLoadFunction();
-});
-$(document).on('click', '.btn-user_coba-class', function() {
-    let iduser_cobaRandom = new Date().getTime();
-    let username = $('.username').val();
-    let password = $('.password').val();
-    let dbInsertuser_coba = rootRef.ref('user_coba/' + iduser_cobaRandom);
-    dbInsertuser_coba.set({
-        id_user_coba: iduser_cobaRandom,
-        username: username,
-        password: password
-    });
-});
-
-function user_cobaLoadFunction() {
-    let user_cobaArray = '';
-    let user_cobaRef = rootRef.ref('user_coba/');
-    user_cobaRef.on('child_added', function(data) {
-        let dataValueuser_coba = data.val();
-        user_cobaArray += dataValueuser_coba.id_user_coba;
-        user_cobaArray += dataValueuser_coba.username;
-        user_cobaArray += dataValueuser_coba.password;
-        user_cobaArray += "<button class='user_coba-edit-class' data='" + dataValueuser_coba.id_user_coba + "'>Edit</button>";
-        user_cobaArray += "<button class='user_coba-delete-class' data='" + dataValueuser_coba.id_user_coba + "'>Delete</button>";
-        $('.user_coba-view-class').html(user_cobaArray)
-    });
-}
-$(document).on('click', '.user_coba-edit-class', function() {
-    let user_cobaId = $(this).attr('data');
-    let user_cobaRef = rootRef.ref('user_coba/' + user_cobaId);
-    user_cobaRef.on('value', function(data) {
-        let user_cobaValueData = data.val();
-        let user_cobaValueArray = '';
-        user_cobaValueArray += "<input type='text' class='user_cobaId-edit' value='" + user_cobaId + "' >";
-        user_cobaValueArray += "<input type='text' class='username-edit' value='" + user_cobaValueData.username + "' >";
-        user_cobaValueArray += "<input type='text' class='password-edit' value='" + user_cobaValueData.password + "' >";
-        $('.user_coba-view-edit-class').html(user_cobaValueArray);
-    });
-});
-    </script>
+$(document).ready(function(){user_cobaLoadFunction();});$(document).on('click', '.btn-user_coba-class', function(){let iduser_cobaRandom = new Date().getTime();let username = $('.username').val();let password = $('.password').val();let dbInsertuser_coba = rootRef.ref('user_coba/' + iduser_cobaRandom);dbInsertuser_coba.set({id_user_coba: iduser_cobaRandom, username : username,password : password});});function user_cobaLoadFunction(){let user_cobaArray = '';let user_cobaRef = rootRef.ref('user_coba/');user_cobaRef.on('child_added', function(data) {let dataValueuser_coba = data.val();user_cobaArray += dataValueuser_coba.id_user_coba;user_cobaArray += dataValueuser_coba.username;user_cobaArray += dataValueuser_coba.password;user_cobaArray += "<button class='user_coba-edit-class' data='"+dataValueuser_coba.id_user_coba+"'>Edit</button>";user_cobaArray += "<button class='user_coba-delete-class' data='"+dataValueuser_coba.id_user_coba+"'>Delete</button>";$('.user_coba-view-class').html(user_cobaArray)});}$(document).on('click', '.user_coba-edit-class', function(){let user_cobaId = $(this).attr('data');let user_cobaRef = rootRef.ref('user_coba/' + user_cobaId);user_cobaRef.on('value', function(data){let user_cobaValueData = data.val();let user_cobaValueArray = '';user_cobaValueArray +="<input type='text' class='user_cobaId-edit' value='"+user_cobaId+"' >";user_cobaValueArray +="<input type='text' class='username-edit' value='"+user_cobaValueData.username+"' >";user_cobaValueArray +="<input type='text' class='password-edit' value='"+user_cobaValueData.password+"' >";user_cobaValueArray +='<button class="btn-user_coba-edit-class">Edit</button>';$('.user_coba-view-edit-class').html(user_cobaValueArray);});});$(document).on('click', '.btn-user_coba-edit-class', function(){let user_cobaId = $('.user_cobaId-edit').val();let username = $('.username-edit').val();let password = $('.password-edit').val();let user_cobaRefEdit = rootRef.ref('user_coba/' + user_cobaId);user_cobaRefEdit.set({id_user_coba: user_cobaId, username : username,password : password});user_cobaLoadFunction();});$(document).on('click', '.user_coba-delete-class', function(){let user_cobaId = $(this).attr('data');let user_cobaRefDelete = rootRef.ref('user_coba/' + user_cobaId);user_cobaRefDelete.remove();user_cobaLoadFunction();});        
+        
+        
+        
+        
+        </script>
 </body>
 </html>

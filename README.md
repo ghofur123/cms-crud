@@ -1,0 +1,1 @@
+crud simple in javascript and firebase
