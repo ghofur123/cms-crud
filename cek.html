@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- user_coba
+     -->
+     <form action='#' class='form-user_coba-1637904015878'>
+         <input type='text' name='username' class='username' placeholder='username'>
+         <input type='text' name='password' class='password' placeholder='password'>
+         <button type='button' class='btn-user_coba-class'>Save</button>
+    </form>
+    <div class="user_coba-view-edit-class"></div>
+    <hr>
+    <div class="user_coba-view-class"></div>
+    <script src="libs/firebase/firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Import the functions you need from the SDKs you need
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyABicr6yxcUaqwmNhYT8VZ_vbuOAyvqVjg",
+            authDomain: "cmsbase-515f9.firebaseapp.com",
+            projectId: "cmsbase-515f9",
+            storageBucket: "cmsbase-515f9.appspot.com",
+            messagingSenderId: "585012239127",
+            appId: "1:585012239127:web:0b99705e863781a762f552"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        // end di ganti
+
+        // firebase root
+        // realtime database reff
+        let rootRef = firebase.database();
+
+        // storage ref
+        let storage = firebase.storage();
+        let storageRef = storage.ref()
+        // end firebase root
+
+        $(document).ready(function() {
+    user_cobaLoadFunction();
+});
+$(document).on('click', '.btn-user_coba-class', function() {
+    let iduser_cobaRandom = new Date().getTime();
+    let username = $('.username').val();
+    let password = $('.password').val();
+    let dbInsertuser_coba = rootRef.ref('user_coba/' + iduser_cobaRandom);
+    dbInsertuser_coba.set({
+        id_user_coba: iduser_cobaRandom,
+        username: username,
+        password: password
+    });
+});
+
+function user_cobaLoadFunction() {
+    let user_cobaArray = '';
+    let user_cobaRef = rootRef.ref('user_coba/');
+    user_cobaRef.on('child_added', function(data) {
+        let dataValueuser_coba = data.val();
+        user_cobaArray += dataValueuser_coba.id_user_coba;
+        user_cobaArray += dataValueuser_coba.username;
+        user_cobaArray += dataValueuser_coba.password;
+        user_cobaArray += "<button class='user_coba-edit-class' data='" + dataValueuser_coba.id_user_coba + "'>Edit</button>";
+        user_cobaArray += "<button class='user_coba-delete-class' data='" + dataValueuser_coba.id_user_coba + "'>Delete</button>";
+        $('.user_coba-view-class').html(user_cobaArray)
+    });
+}
+$(document).on('click', '.user_coba-edit-class', function() {
+    let user_cobaId = $(this).attr('data');
+    let user_cobaRef = rootRef.ref('user_coba/' + user_cobaId);
+    user_cobaRef.on('value', function(data) {
+        let user_cobaValueData = data.val();
+        let user_cobaValueArray = '';
+        user_cobaValueArray += "<input type='text' class='user_cobaId-edit' value='" + user_cobaId + "' >";
+        user_cobaValueArray += "<input type='text' class='username-edit' value='" + user_cobaValueData.username + "' >";
+        user_cobaValueArray += "<input type='text' class='password-edit' value='" + user_cobaValueData.password + "' >";
+        $('.user_coba-view-edit-class').html(user_cobaValueArray);
+    });
+});
+    </script>
+</body>
+</html>
