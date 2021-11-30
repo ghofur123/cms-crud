@@ -52,6 +52,14 @@
                 // Initialize Firebase
                 //const app = initializeApp(firebaseConfig);
                 firebase.initializeApp(firebaseConfig);
+                // firebase root
+                // realtime database reff
+                let rootRef = firebase.database();
+
+                // storage ref
+                let storage = firebase.storage();
+                let storageRef = storage.ref();
+                // end firebase root
             </textarea>
             <div class="value-hasil-form-class"></div>
             <div class="value-hasil-js-class"></div>

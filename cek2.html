@@ -12,7 +12,7 @@
      <form action='#' class='form-uploads-1638190066290' >
          <input type='text' name='name' class='name' placeholder='name' >
          <input type='file' name='gambar' class='gambar' placeholder='gambar' >
-        <button type='button' class='btn-uploads-class'>Save</button>
+        <button type='button' class='btn-uploadsinsert-class'>Save</button>
     </form>    
     <script src="libs/firebase/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -47,29 +47,24 @@
         $(document).ready(function() {
     uploadsLoadFunction();
 });
-$(document).on('click', '.btn-uploads-class', function() {
+$(document).on('click', '.btn-uploadsinsert-class', function() {
     let iduploadsRandom = new Date().getTime();
     let name = $('.name').val();
     let gambar = $('.gambar').get(0).files[0];
-
-    console.log(gambar.name);    
-    let imgUploadgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name).put(gambar);
-    imgUploadgambar.on('state_changed', function (snapshot) { 
-
-    }, function (error) {  
+    let imguploadsgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name).put(gambar);
+    imguploadsgambar.on('state_changed', function(snapshot) {}, function(error) {
         console.log(error);
-    }, function () {  
-        imgUploadgambar.snapshot.ref.getDownloadURL().then(function (url) {  
-            console.log(url);
+    }, function() {
+        imguploadsgambar.snapshot.ref.getDownloadURL().then(function(urlGetDownload) {
+            console.log(urlGetDownload);
             let dbInsertuploads = rootRef.ref('uploads/' + iduploadsRandom);
             dbInsertuploads.set({
                 id_uploads: iduploadsRandom,
                 name: name,
-                gambar: gambar.name,
-                gambar_link: url
+                gambar_link: urlGetDownload,
+                gambar: gambar.name
             });
         });
-        
     });
 });
 
@@ -104,8 +99,6 @@ $(document).on('click', '.btn-uploads-edit-class', function() {
     let gambar = $('.gambar').get(0).files[0];
     imgUploadgambar.put(gambar);
     let imgUploadgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name);
-
-
     let uploadsRefEdit = rootRef.ref('uploads/' + uploadsId);
     uploadsRefEdit.set({
         id_uploads: uploadsId,
@@ -122,10 +115,7 @@ $(document).on('click', '.uploads-delete-class', function() {
     let gambarRefDelete = storageRef.child('gambar/' + gambarImageFile);
     gambarRefDelete.delete().then(function() {}).catch(function(error) {});
     uploadsLoadFunction();
-});
-        
-        
-        
-        </script>
+});        
+</script>
 </body>
 </html>
