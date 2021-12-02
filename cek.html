@@ -9,11 +9,14 @@
 <body>
     <!-- user_coba
      -->
-     <form action='#' class='form-uploads-1638190066290' >
-         <input type='text' name='name' class='name' placeholder='name' >
-         <input type='file' name='gambar' class='gambar' placeholder='gambar' >
-        <button type='button' class='btn-uploads-class'>Save</button>
-    </form>    
+     <form action='#' class='form-uploads-1638419832910'>
+        <input type='text' name='name' class='name' placeholder='name' />
+        <input type='file' name='gambar' class='gambar' placeholder='gambar' />
+        <button type='button' class='btn-uploadsinsert-class'>Save</button>
+      </form>
+      <div class='uploads-view-edit-class'></div>
+      <div class='uploads-view-class'></div>   
+
     <script src="libs/firebase/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -47,29 +50,27 @@
         $(document).ready(function() {
     uploadsLoadFunction();
 });
-$(document).on('click', '.btn-uploads-class', function() {
+$(document).on('click', '.btn-uploadsinsert-class', function() {
     let iduploadsRandom = new Date().getTime();
     let name = $('.name').val();
     let gambar = $('.gambar').get(0).files[0];
-
-    console.log(gambar.name);    
-    let imgUploadgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name).put(gambar);
-    imgUploadgambar.on('state_changed', function (snapshot) { 
-
-    }, function (error) {  
+    let imguploadsgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name).put(gambar);
+    imguploadsgambar.on('state_changed', function(snapshot) {
+        let progress = (snapshot.bytesTranferred / snapshot.totalBytes) * 100;
+        console.log(progress);
+    }, function(error) {
         console.log(error);
-    }, function () {  
-        imgUploadgambar.snapshot.ref.getDownloadURL().then(function (url) {  
-            console.log(url);
+    }, function() {
+        imguploadsgambar.snapshot.ref.getDownloadURL().then(function(urlGetDownload) {
+            console.log(urlGetDownload);
             let dbInsertuploads = rootRef.ref('uploads/' + iduploadsRandom);
             dbInsertuploads.set({
                 id_uploads: iduploadsRandom,
                 name: name,
-                gambar: gambar.name,
-                gambar_link: url
+                gambar_link: urlGetDownload,
+                gambar: iduploadsRandom + "-" + gambar.name
             });
         });
-        
     });
 });
 
@@ -94,38 +95,47 @@ $(document).on('click', '.uploads-edit-class', function() {
         let uploadsValueArray = '';
         uploadsValueArray += "<input type='text' class='uploadsId-edit' value='" + uploadsId + "' >";
         uploadsValueArray += "<input type='text' class='name-edit' value='" + uploadsValueData.name + "' >";
+        uploadsValueArray += "<img src='" + uploadsValueData.gambar_link + "' style='width:50px; height:50px;' >";
+        uploadsValueArray += "<input type='file' class='gambar-edit' value='" + uploadsValueData.gambar + "' >";
+        uploadsValueArray += "<input type='text' class='gambar-edit-file-lama' value='" + uploadsValueData.gambar + "' hidden >";
         uploadsValueArray += '<button class="btn-uploads-edit-class">Edit</button>';
         $('.uploads-view-edit-class').html(uploadsValueArray);
     });
 });
 $(document).on('click', '.btn-uploads-edit-class', function() {
-    let uploadsId = $('.uploadsId-edit').val();
+    let iduploads = $('.uploadsId-edit').val();
     let name = $('.name-edit').val();
-    let gambar = $('.gambar').get(0).files[0];
-    imgUploadgambar.put(gambar);
-    let imgUploadgambar = storageRef.child('uploads/' + iduploadsRandom + '-' + gambar.name);
-
-
-    let uploadsRefEdit = rootRef.ref('uploads/' + uploadsId);
-    uploadsRefEdit.set({
-        id_uploads: uploadsId,
-        name: name,
-        gambar: gambar.name
+    let gambar = $('.gambar-edit').get(0).files[0];
+    let uploadsGambarEdit = storageRef.child('uploads/' + iduploads + '-' + gambar.name).put(gambar);
+    let gambarFileLama = $('.gambar-edit-file-lama').val();
+    let uploadsRefDelete = storageRef.child('uploads/' + gambarFileLama);
+    uploadsRefDelete.delete().then(function() {}).catch(function(error) {});
+    uploadsGambarEdit.on('state_changed', function(snapshot) {}, function(error) {
+        console.log(error);
+    }, function() {
+        uploadsGambarEdit.snapshot.ref.getDownloadURL().then(function(urlGetDownload) {
+            console.log(urlGetDownload);
+            let uploadsEditDB = rootRef.ref('uploads/' + iduploads);
+            uploadsEditDB.set({
+                id_uploads: iduploads,
+                name: name,
+                gambar_link: urlGetDownload,
+                gambar: iduploads + "-" + gambar.name
+            });
+        });
     });
-    uploadsLoadFunction();
 });
 $(document).on('click', '.uploads-delete-class', function() {
     let uploadsId = $(this).attr('data');
     let uploadsRefDelete = rootRef.ref('uploads/' + uploadsId);
     uploadsRefDelete.remove();
     let gambarImageFile = $(this).attr('data2');
-    let gambarRefDelete = storageRef.child('gambar/' + gambarImageFile);
+    let gambarRefDelete = storageRef.child('uploads/' + gambarImageFile);
     gambarRefDelete.delete().then(function() {}).catch(function(error) {});
     uploadsLoadFunction();
-});
+}); 
         
         
-        
-        </script>
+</script>
 </body>
 </html>

@@ -43,6 +43,8 @@ $(".btn-form-jumlah-action-class").click(function() {
     }
     textAreaValue += "<button type='button' class='btn-" + namaTableStorage + "insert-class'>Save</button>";
     textAreaValue += "</form>";
+    textAreaValue += "<div class='"+namaTableStorage + "-view-edit-class'></div>";
+    textAreaValue += "<div class='"+namaTableStorage + "-view-class'></div>";
     textAreaValue += "</textarea>";
     $(".value-hasil-form-class").html(textAreaValue);
 
@@ -74,6 +76,8 @@ $(".btn-form-jumlah-action-class").click(function() {
             // value db insert
     if(statusFileOrNot == 1){
         textAreaValueJs += "img" + namaTableStorage + "gambar.on('state_changed', function (snapshot) {"+
+        "let progress = (snapshot.bytesTranferred / snapshot.totalBytes) * 100;"+
+        "console.log(progress);"+
         "}, function (error) {"+
             "console.log(error);"+
         "}, function () {"+
@@ -93,7 +97,7 @@ $(".btn-form-jumlah-action-class").click(function() {
                         let formSeleteType2 = $(".form-select-type-" + ii + "").val();
                         if (formSeleteType2 == "file") {
                             textAreaValueJs += formInputType2 + "_link : urlGetDownload, "+ 
-                            formInputType2 + " : " + formInputType2 + ".name" + kommaEnd + " ";
+                            formInputType2 + " : id" + namaTableStorage +"Random +\"-\"+" + formInputType2 + ".name" + kommaEnd + " ";
                         } else {
                             textAreaValueJs += formInputType2 + " : " + formInputType2 + kommaEnd;
                         }
@@ -180,6 +184,7 @@ $(".btn-form-jumlah-action-class").click(function() {
         } else if(formSeleteType3 == "file"){
             textAreaValueJs += namaTableStorage + "ValueArray +=\"<img src='\" + "+namaTableStorage + "ValueData."+formInputType3+"_link + \"' style='width:50px; height:50px;' >\";";
             textAreaValueJs += namaTableStorage + "ValueArray +=\"<input type='file' class='" + formInputType3 + "-edit' value='\"+" + namaTableStorage + "ValueData." + formInputType3 + "+\"' >\";";
+            textAreaValueJs += namaTableStorage + "ValueArray +=\"<input type='text' class='" + formInputType3 + "-edit-file-lama' value='\"+" + namaTableStorage + "ValueData." + formInputType3 + "+\"' hidden >\";";
         }
     }
     textAreaValueJs += namaTableStorage + "ValueArray +='<button class=\"btn-" + namaTableStorage + "-edit-class\">Edit</button>';";
@@ -201,21 +206,26 @@ for (let i = 0; i < jumlahFildStorage; i++) {
     if (formSeleteTypeEdit == "file") {
         statusFileOrNotEdit = 1;
         textAreaValueJs += "let " + formInputTypeEdit + " = $('." + formInputTypeEdit + "-edit').get(0).files[0];";
-        textAreaValueJs += "let img" + namaTableStorage + "gambar = storageRef.child('" + namaTableStorage + "/' + id" + namaTableStorage + " + '-' + " + formInputTypeEdit + ".name).put(" + formInputTypeEdit + ");";
+        textAreaValueJs += "let "+namaTableStorage + "GambarEdit = storageRef.child('" + namaTableStorage + "/' + id" + namaTableStorage + " + '-' + " + formInputTypeEdit + ".name).put(" + formInputTypeEdit + ");";
+
+        textAreaValueJs += "let " + formInputTypeEdit + "FileLama = $('." + formInputTypeEdit + "-edit-file-lama').val();";
+        // delet file lama
+        textAreaValueJs += "let "+ namaTableStorage +"RefDelete = storageRef.child('"+namaTableStorage+"/' + "+formInputTypeEdit+"FileLama);";
+        textAreaValueJs += namaTableStorage +"RefDelete.delete().then(function() {}).catch(function(error) {});";
     } else {
         textAreaValueJs += "let " + formInputTypeEdit + " = $('." + formInputTypeEdit + "-edit').val();";
     }
 }
         // value db edit
 if(statusFileOrNotEdit == 1){
-    textAreaValueJs += "img" + namaTableStorage + "gambar.on('state_changed', function (snapshot) {"+
+    textAreaValueJs += namaTableStorage + "GambarEdit.on('state_changed', function (snapshot) {"+
     "}, function (error) {"+
         "console.log(error);"+
     "}, function () {"+
-        "img" + namaTableStorage + "gambar.snapshot.ref.getDownloadURL().then(function (urlGetDownload) {"+
+        namaTableStorage + "GambarEdit.snapshot.ref.getDownloadURL().then(function (urlGetDownload) {"+
             "console.log(urlGetDownload);"+
-            "let dbInsert" + namaTableStorage + " = rootRef.ref('" + namaTableStorage + "/' + id" + namaTableStorage +");"+
-            "dbInsert" + namaTableStorage + ".set({"+
+            "let " + namaTableStorage + "EditDB = rootRef.ref('" + namaTableStorage + "/' + id" + namaTableStorage +");"+
+            namaTableStorage + "EditDB.set({"+
                 "id_uploads: id" + namaTableStorage +",";
                 for (let ii = 0; ii < jumlahFildStorage; ii++) {
                     let kommaEnd = "";
@@ -228,20 +238,19 @@ if(statusFileOrNotEdit == 1){
                     let formSeleteType2 = $(".form-select-type-" + ii + "").val();
                     if (formSeleteType2 == "file") {
                         textAreaValueJs += formInputType2 + "_link : urlGetDownload, "+ 
-                        formInputType2 + " : " + formInputType2 + ".name" + kommaEnd + " ";
+                        formInputType2 + " : id" + namaTableStorage +"+\"-\"+" + formInputType2 + ".name" + kommaEnd + " ";
                     } else {
                         textAreaValueJs += formInputType2 + " : " + formInputType2 + kommaEnd;
                     }
                 }
             textAreaValueJs += "});"+
         "});"+
-        
     "});"+
     "});";
 } else {
     console.log("tidak ada file");
-    textAreaValueJs += "let dbInsert" + namaTableStorage + " = rootRef.ref('" + namaTableStorage + "/' + id" + namaTableStorage + ");";
-    textAreaValueJs += "dbInsert" + namaTableStorage + ".set({";
+    textAreaValueJs += "let " + namaTableStorage + "EditDB = rootRef.ref('" + namaTableStorage + "/' + id" + namaTableStorage + ");";
+    textAreaValueJs += "" + namaTableStorage + "EditDB.set({";
     textAreaValueJs += "id_" + namaTableStorage + ": id" + namaTableStorage + ", ";
     for (let ii = 0; ii < jumlahFildStorage; ii++) {
         let kommaEnd = "";
@@ -253,7 +262,7 @@ if(statusFileOrNotEdit == 1){
         let formInputType2 = $(".form-input-type-" + ii).val();
         let formSeleteType2 = $(".form-select-type-" + ii + "").val();
         if (formSeleteType2 == "file") {
-            textAreaValueJs += formInputType2 + " : " + formInputType2 + ".name" + kommaEnd + " ";
+            textAreaValueJs += formInputType2 + " : id" + namaTableStorage +"-" + formInputType2 + ".name" + kommaEnd + " ";
         } else {
             textAreaValueJs += formInputType2 + " : " + formInputType2 + kommaEnd;
         }
@@ -278,7 +287,7 @@ if(statusFileOrNotEdit == 1){
         let formSeleteTypeDelete = $(".form-select-type-" + i + "").val();
         if (formSeleteTypeDelete == "file") {
             textAreaValueJs += "let "+formInputTypeDelete+"ImageFile = $(this).attr('data2');";
-            textAreaValueJs += "let "+formInputTypeDelete+"RefDelete = storageRef.child('"+formInputTypeDelete+"/' + "+formInputTypeDelete+"ImageFile);";
+            textAreaValueJs += "let "+formInputTypeDelete+"RefDelete = storageRef.child('"+namaTableStorage+"/' + "+formInputTypeDelete+"ImageFile);";
             textAreaValueJs += formInputTypeDelete+"RefDelete.delete().then(function() {}).catch(function(error) {});";
         }
     }
