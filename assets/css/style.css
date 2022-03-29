@@ -1,0 +1,22 @@
+.menu-index {
+    border: 1px solid rgb(78, 72, 72);
+    display: inline-block;
+    cursor: pointer;
+    background: rgb(56, 52, 52);
+    color: aliceblue;
+}
+
+.db-class {
+    display: block;
+}
+.table-class {
+    display: block;
+}
+.text-area-value-form-class {
+    width: 100%;
+    height: 200px;
+}
+/* select */
+.child-class {
+    display: none;
+}

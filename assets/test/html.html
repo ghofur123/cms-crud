@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<form action='#' class='form-users-1648548737095' >
+		<input type='text' name='uniq_users' class='uniq_users' placeholder='users' value='1648548737095' hidden />
+		<input type='text' name='username' class='username' placeholder='username' />
+		<input type='text' name='password' class='password' placeholder='password' />
+		<button type='submit' class='btn-usersinsert-class'>Save</button>
+	</form>
+<div class='class-users-view-edit-data'></div>
+<div class='class-users-view-data'></div>
+</body>
+<script type="text/javascript" src="<?php base_url(); ?>assets/jquery/jquery-3.4.1.js"></script>
+<script>
+	$(document).ready(function(){
+		usersLoadDataAll();
+		$(".btn-users-form-delete").click(function(){
+			console.log("ok");
+		});
+	});
+function usersLoadDataAll() {
+	let usersDataResult = '';
+	$.ajax({
+		type: 'POST',
+		url: '',
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		dataType: 'json',
+		data: '',
+		beforeSend: function() {},
+		success: function(data) {
+			for (var i = 0; i < data.length; i++) {
+				usersDataResult += data[i]['username'];
+				usersDataResult += data[i]['password'];
+				usersDataResult += "<button type='button' data='" + data[i]['uniq_users'] + "' class='btn-users-form-edit'>Edit</button>"
+				usersDataResult += "<button type='button' data='" + data[i]['uniq_users'] + "' class='btn-users-form-delete'>Delete</button> <br />"
+			}
+			$('.class-users-view-data').html(usersDataResult);
+		}
+	}).done(function() {});
+}
+$('.form-users-1648555827739').submit(function() {
+	$.ajax({
+		type: 'POST',
+		url: 'linkkkkkknya?act=insert',
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		dataType: 'json',
+		data: $(this).serialize(),
+		beforeSend: function() {},
+		success: function(data) {
+			if (data[0]['status'] == 1) {
+				console.log(data[0]['message']);
+			} else if (data[0]['status'] == 2) {
+				console.log(data[0]['message']);
+			}
+		}
+	}).done(function() {});
+	return false;
+});
+</script>
+</html>

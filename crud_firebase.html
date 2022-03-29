@@ -1,0 +1,62 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>crud firebase</title>
+</head>
+<body>
+    <div class="header">front end firebase</div>
+<div class="content">
+    <div class="db-class">
+        jumlah fild table<input type="text" name="" class="jumlah-db-class" placeholder="jumlah database -> table -> fild">
+        <br>
+        nama table <input class="nama-table-class" placeholder="nama table" >
+        <button class="btn-table-jumlah-class">proses</button>
+    </div>
+    <hr>
+    <div class="table-class">
+        <div class="form-action-class"></div>
+        <button class="btn-form-jumlah-action-class">proses</button>
+    </div>
+    <div class="hasil-class">
+        <textarea name="" class="text-area-value-form-class">
+            // Import the functions you need from the SDKs you need
+            // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyABicr6yxcUaqwmNhYT8VZ_vbuOAyvqVjg",
+                authDomain: "cmsbase-515f9.firebaseapp.com",
+                projectId: "cmsbase-515f9",
+                storageBucket: "cmsbase-515f9.appspot.com",
+                messagingSenderId: "585012239127",
+                appId: "1:585012239127:web:0b99705e863781a762f552"
+            };
+
+            // Initialize Firebase
+            //const app = initializeApp(firebaseConfig);
+            firebase.initializeApp(firebaseConfig);
+            // firebase root
+            // realtime database reff
+            let rootRef = firebase.database();
+
+            // storage ref
+            let storage = firebase.storage();
+            let storageRef = storage.ref();
+            // end firebase root
+        </textarea>
+        <div class="value-hasil-form-class"></div>
+        <div class="value-hasil-js-class"></div>
+    </div>
+</div>
+<script src="libs/jquery/jquery-3.4.1.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

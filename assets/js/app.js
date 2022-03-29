@@ -1,3 +1,7 @@
+$(document).ready(function(){
+    // menu
+});
+
 $(".btn-table-jumlah-class").click(function() {
     let jumlahFild = $(".jumlah-db-class").val();
     localStorage.setItem("namaTable", $(".nama-table-class").val());
