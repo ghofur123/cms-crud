@@ -21,10 +21,10 @@ $(document).on("click", ".btn-table-jumlah-class", function() {
     }
 });
 $(document).on("click", ".btn-form-jumlah-action-class", function() {
+    localStorage.setItem("typeForm", $(".type-form-class").val());
     let idRandom = new Date().getTime();
     let jumlahFildStorage = localStorage.getItem("jumlah-fild");
     let namaTableStorage = localStorage.getItem("namaTable");
-
     // db
     let textAreaValueDB = "";
         textAreaValueDB += "<textarea class='text-area-value-form-class'>";
@@ -60,16 +60,17 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             "$this->load->model('crud_function_model');"+
         "}"+
         "public function index(){"+
+            "$this->load->view('coba/users');"+
         "}"+
         "public function load(){"+
-            "if(empty($_GET['act'])){"+
+            "if(!isset($_GET['act'])){"+
             "} else {"+
                 "if($_GET['act'] == 'load'){"+
-                    "if($_GET['where_parameter'] == null || $_GET['where_parameter'] == ''){"+
+                    "if(!isset($_GET['where_parameter'])){"+
                         "$whereParam = '';"+
                     "}else {"+
                         "$whereParam = array("+
-                            "'uniq_"+ namaTableStorage +"' => $_GET[\"uniq_"+ namaTableStorage +"\"]"+
+                            "'uniq_"+ namaTableStorage +"' =>$_GET[\"uniq_"+ namaTableStorage +"\"]"+
                         ");"+
                     "}"+
                     "$response = array();"+
@@ -89,7 +90,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                     "}"+
                     "echo json_encode($response);"+
                 "}"+
-                "if($_GET['act'] == 'insert'){"+
+                "else if($_GET['act'] == 'insert'){"+
                     "$response = array();"+
                     "$param = array("+
                         "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"'), ";
@@ -119,6 +120,51 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                     "}"+
                     "echo json_encode($response);"+
                 "}"+
+
+                "else if($_GET['act'] == 'update'){"+
+                    "$response = array();"+
+                    "$where = array("+
+                        "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"')"+
+                    ");"+
+                    "$set = array(";
+                    for (let i = 0; i < jumlahFildStorage; i++) {
+                        let formInputType = $(".form-input-type-" + i).val();
+                        textAreaValuePHPCI += "'"+ formInputType +"' => $this->input->post('"+ formInputType +"'),";
+                    }
+                    textAreaValuePHPCI += ");";
+                    for (let i = 0; i < jumlahFildStorage; i++) {
+                        let formInputType = $(".form-input-type-" + i).val();
+                        textAreaValuePHPCI += "$this->form_validation->set_rules('"+ formInputType +"', '"+ formInputType +"', 'required');";
+                    }
+                    textAreaValuePHPCI += "if($this->form_validation->run() == true){"+
+                        "$queryLogin = $this->crud_function_model->updateData('"+ namaTableStorage +"', $set, $where);"+
+                        "$message =  array("+
+                            "'status' => '1',"+
+                            "'message' => 'input berhasil'"+
+                        ");"+
+                        "array_push($response, $message);"+
+                    "} else {"+
+                        "$message =  array("+
+                            "'status' => '2',"+
+                            "'message' => validation_errors()"+
+                        ");"+
+                        "array_push($response, $message);"+
+                    "}"+
+                    "echo json_encode($response);"+
+                "}"+
+                "else if($_GET['act'] == 'delete'){"+
+                    "$response = array();"+
+                    "$param = array("+
+                        "'uniq_"+ namaTableStorage +"' => $_GET['uniq_"+ namaTableStorage +"'],"+
+                    ");"+
+                    "$this->crud_function_model->deleteData('"+ namaTableStorage +"', $param);"+
+                        "$message =  array("+
+                            "'status' => '1',"+
+                            "'message' => 'delete berhasil'"+
+                        ");"+
+                        "array_push($response, $message);"+
+                    "echo json_encode($response);"+
+                "}"+
             "}"+
         "}"+
     "}";
@@ -131,7 +177,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
     let textAreaValue = "";
     textAreaValue += "<textarea class='text-area-value-form-class'>";
     textAreaValue += "<form action='#' class='form-" + namaTableStorage + "-" + idRandom + "' >";
-    textAreaValue += "<input type='text' name='uniq_" + namaTableStorage + "' class='uniq_" + namaTableStorage + "' placeholder='" + namaTableStorage + "' value='" + idRandom + "' hidden /> ";
+    textAreaValue += "<input type='text' name='uniq_" + namaTableStorage + "' class='uniq_" + namaTableStorage + "' placeholder='" + namaTableStorage + "' hidden /> ";
     for (let i = 0; i < jumlahFildStorage; i++) {
         let formInputType = $(".form-input-type-" + i).val();
         let formSeleteType = $(".form-select-type-" + i + "").val();
@@ -163,11 +209,15 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
     // js
     textAreaValueJs = "";
     textAreaValueJs += "<textarea class='text-area-value-form-class'>";
-    textAreaValueJs += "function " + namaTableStorage + "LoadDataAll(){"+
+    textAreaValueJs += "$(document).ready(function(){"+
+            "$('.uniq_" + namaTableStorage + "').val(new Date().getTime());"+
+            "usersLoadDataAll();"+
+        "});"+
+    "function " + namaTableStorage + "LoadDataAll(){"+
             "let " + namaTableStorage + "DataResult = '';"+
             "$.ajax({"+
                 "type : 'POST',"+
-                "url : '',"+
+                "url : 'http://localhost:8080/cobaframework/users_api/load?act=load',"+
                 "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
                 "dataType    : 'json',"+
                 "data : '',"+
@@ -179,28 +229,26 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                     let formInputType = $(".form-input-type-" + i).val();
                     textAreaValueJs += namaTableStorage + "DataResult += data[i]['"+ formInputType +"'];";
                 }
-                textAreaValueJs += namaTableStorage + "DataResult +=\"<button type='button' data='\"+data[i]['uniq_"+ namaTableStorage +"']+\" class='btn-"+ namaTableStorage +"-form-edit'>Edit</button>\"";
-                textAreaValueJs += namaTableStorage + "DataResult +=\"<button type='button' data='\"+data[i]['uniq_"+ namaTableStorage +"']+\" class='btn-"+ namaTableStorage +"-form-delete'>Delete</button> <br />\"";
+                textAreaValueJs += namaTableStorage + "DataResult +=\"<button type='button' data='\"+data[i]['uniq_"+ namaTableStorage +"']+\"' class='btn-"+ namaTableStorage +"-form-edit'>Edit</button>\"";
+                textAreaValueJs += namaTableStorage + "DataResult +=\"<button type='button' data='\"+data[i]['uniq_"+ namaTableStorage +"']+\"' class='btn-"+ namaTableStorage +"-form-delete'>Delete</button> <br />\"";
                 textAreaValueJs += "}"+
                 "$('.class-" + namaTableStorage + "-view-data').html(" + namaTableStorage + "DataResult);"+
                 "}"+
             "}).done(function(){"+
             "});"+
         "}";
-        textAreaValueJs += "$(document).on('click', '.btn-"+ namaTableStorage +"-form-edit', function(){"+
+    textAreaValueJs += "$(document).on('click', '.btn-"+ namaTableStorage +"-form-edit', function(){"+
         "let dataId = $(this).attr('data');"+
-        "console.log(dataId);"+
-            
-        "let usersDataResult = '';"+
+        "let "+ namaTableStorage +"EditDataResult = '';"+
         "$.ajax({"+
             "type: 'POST',"+
-            "url: 'http://localhost:8080/cobaframework/users_api/load?act=load&where_parameter=1&uniq_users='+dataId,"+
+            "url: 'http://localhost:8080/cobaframework/users_api/load?act=load&where_parameter=1&uniq_"+ namaTableStorage +"=' + dataId,"+
             "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
             "dataType: 'json',"+
             "data: '',"+
             "beforeSend: function() {},"+
             "success: function(data) {"+
-                "usersDataResult += \"<form action='#' class='form-edit-"+ namaTableStorage +"-"+ idRandom +"' >\"+"+
+                ""+ namaTableStorage +"EditDataResult += \"<form action='#' class='form-edit-"+ namaTableStorage +"-"+ idRandom +"' >\"+"+
                 "\"<input type='text' name='uniq_"+ namaTableStorage +"' class='uniq_"+ namaTableStorage +"' value='\"+data[0]['uniq_"+ namaTableStorage +"']+\"' />\"+";
                 for (let i = 0; i < jumlahFildStorage; i++) {
                     let formInputType = $(".form-input-type-" + i).val();
@@ -208,15 +256,34 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                 }
                 textAreaValueJs += "\"<button type='submit' class='btn-"+ namaTableStorage +"-edit-class'>Simpan</button>\"+"+
                 "\"</form>\";"+
-                "$('.class-"+ namaTableStorage +"-view-edit-data').html(usersDataResult);"+
+                "$('.class-"+ namaTableStorage +"-view-edit-data').html("+ namaTableStorage +"EditDataResult);"+
             "}"+
         "}).done(function() {});"+
         "});";
-
-    textAreaValueJs += "$('.form-" + namaTableStorage + "-" + idRandom + "').submit(function(){"+
+    textAreaValueJs += "$(document).on('click', '.btn-"+ namaTableStorage +"-form-delete', function(){"+
+        "let dataId = $(this).attr('data');"+
+        "let "+ namaTableStorage +"DeleteDataResult = '';"+
+        "$.ajax({"+
+            "type: 'POST',"+
+            "url: 'http://localhost:8080/cobaframework/users_api/load?act=delete&uniq_"+ namaTableStorage +"=' + dataId,"+
+            "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
+            "dataType: 'json',"+
+            "data: '',"+
+            "beforeSend: function() {},"+
+            "success: function(data) {"+
+                "if(data[0]['status'] == 1){"+
+                "console.log(data[0]['message']);"+
+                namaTableStorage + "LoadDataAll();"+
+                "} else if(data[0]['status'] == 2){"+
+                "console.log(data[0]['message']);"+
+                "}"+
+            "}"+
+        "}).done(function() {});"+
+        "});";
+    textAreaValueJs += "$(document).on('submit', '.form-edit-" + namaTableStorage + "-" + idRandom + "', function(){"+
         "$.ajax({"+
             "type : 'POST',"+
-            "url : 'linkkkkkknya?act=insert',"+
+            "url : 'http://localhost:8080/cobaframework/users_api/load?act=update',"+
             "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
             "dataType : 'json',"+
             "data : $(this).serialize(),"+
@@ -225,6 +292,28 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             "success : function(data){"+
                 "if(data[0]['status'] == 1){"+
                 "console.log(data[0]['message']);"+
+                namaTableStorage + "LoadDataAll();"+
+                "} else if(data[0]['status'] == 2){"+
+                "console.log(data[0]['message']);"+
+                "}"+
+            "}"+
+        "}).done(function(){"+
+        "});"+
+        "return false;"+
+    "});";
+    textAreaValueJs += "$('.form-" + namaTableStorage + "-" + idRandom + "').submit(function(){"+
+        "$.ajax({"+
+            "type : 'POST',"+
+            "url : 'http://localhost:8080/cobaframework/users_api/load?act=insert',"+
+            "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
+            "dataType : 'json',"+
+            "data : $(this).serialize(),"+
+            "beforeSend: function() {"+
+            "},"+
+            "success : function(data){"+
+                "if(data[0]['status'] == 1){"+
+                "console.log(data[0]['message']);"+
+                namaTableStorage + "LoadDataAll();"+
                 "} else if(data[0]['status'] == 2){"+
                 "console.log(data[0]['message']);"+
                 "}"+
