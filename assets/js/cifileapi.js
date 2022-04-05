@@ -48,7 +48,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
     textAreaValuePHPCI += "<?php"+
     "defined('BASEPATH') OR exit('No direct script access allowed');"+
 
-    "class "+ namaTableStorage +"_api extends CI_Controller {"+
+    "class "+ namaTableStorage.charAt(0).toUpperCase() + namaTableStorage.slice(1) +"_api extends CI_Controller {"+
         "public function __construct(){"+
             "parent::__construct();"+
             "$this->output->set_header( 'Access-Control-Allow-Origin: *' );"+
@@ -61,7 +61,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             "$this->load->model('crud_function_model');"+
         "}"+
         "public function index(){"+
-            "$this->load->view('coba/users');"+
+            "$this->load->view('coba/"+ namaTableStorage +"');"+
         "}"+
         "public function load(){"+
             "if(!isset($_GET['act'])){"+
@@ -102,7 +102,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                         }
                     }
                     textAreaValuePHPCI += "if($this->form_validation->run() == true){"+
-                    "$rand = rand(0000000000,9999999999);"+
+                    "$rand = rand(00000000000000000000,99999999999999999999);"+
                     "$config_upload = array("+
                         "'file_name' => 'beritajatim_com'.$rand.'.jpg',"+
                         "'upload_path' => './uploads/',"+
@@ -118,7 +118,7 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                             textAreaValuePHPCI += "if ( ! $this->upload->do_upload('"+ formInputType +"')){"+
                                 "$message =  array("+
                                     "'status' => '2',"+
-                                    "'message' => 'upload gagal'"+
+                                    "'message' => $this->upload->display_errors()"+
                                 ");"+
                                 "array_push($response, $message);"+
                             "}else {"+
@@ -169,49 +169,27 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                                         ");"+
                                         "array_push($response, $message);"+
                                     "} else {"+
-                                        "$message    = array("+
-                                            "'status_watermark' => '1',"+
-                                            "'message_watermark' => 'watermark berhasil'"+
-                                        ");"+
-                                        "array_push($response, $message);"+
-                                    "}"+
-                                    "$param = array("+
+                                        "$param = array("+
                                         "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"'), ";
-                                    for (let i = 0; i < jumlahFildStorage; i++) {
-                                        let formInputType2 = $(".form-input-type-" + i).val();
-                                        let formSeleteType2 = $(".form-select-type-" + i + "").val();
-                                        if (formSeleteType2 == "text") {
-                                            textAreaValuePHPCI += "'"+ formInputType2 +"' => $this->input->post('"+ formInputType2 +"'),";
-                                        } else if (formSeleteType2 == "file") {
-                                            textAreaValuePHPCI += "'"+ formInputType2 +"' => $this->upload->data('file_name'),";
+                                        for (let i = 0; i < jumlahFildStorage; i++) {
+                                            let formInputType2 = $(".form-input-type-" + i).val();
+                                            let formSeleteType2 = $(".form-select-type-" + i + "").val();
+                                            if (formSeleteType2 == "text") {
+                                                textAreaValuePHPCI += "'"+ formInputType2 +"' => $this->input->post('"+ formInputType2 +"'),";
+                                            } else if (formSeleteType2 == "file") {
+                                                textAreaValuePHPCI += "'"+ formInputType2 +"' => $this->upload->data('file_name'),";
+                                            }
                                         }
-                                    }
-                                    textAreaValuePHPCI +=");"+
-
-                                    // textAreaValuePHPCI += "$this->form_validation->set_rules('uniq_"+ namaTableStorage +"', 'uniq_"+ namaTableStorage +"', 'required');";
-                                    // for (let i = 0; i < jumlahFildStorage; i++) {
-                                    //     let formInputType3 = $(".form-input-type-" + i).val();
-                                    //     let formSeleteType3 = $(".form-select-type-" + i + "").val();
-                                    //     if (formSeleteType3 == "text") {
-                                    //         textAreaValuePHPCI += "$this->form_validation->set_rules('"+ formInputType3 +"', '"+ formInputType3 +"', 'required');";
-                                    //     }
-                                    // }
-                                    // textAreaValuePHPCI += "if($this->form_validation->run() == true){"+
-                                        "$queryLogin = $this->crud_function_model->insertData('"+ namaTableStorage +"', $param);"+
-                                        "$message =  array("+
-                                            "'status' => '1',"+
-                                            "'message' => 'input berhasil'"+
-                                        ");"+
-                                        "array_push($response, $message);"+
-                                    // "} else {"+
-                                    //     "$message =  array("+
-                                    //         "'status' => '2',"+
-                                    //         "'message' => validation_errors()"+
-                                    //     ");"+
-                                    //     "array_push($response, $message);"+
-                                    // "}"+
-                                    // "echo json_encode($response);"+
-
+                                        textAreaValuePHPCI +=");"+
+                                            "$queryLogin = $this->crud_function_model->insertData('"+ namaTableStorage +"', $param);"+
+                                            "$message =  array("+
+                                                "'status_watermark' => '1',"+
+                                                "'message_watermark' => 'watermark berhasil',"+
+                                                "'status' => '1',"+
+                                                "'message' => 'input berhasil'"+
+                                            ");"+
+                                            "array_push($response, $message);"+
+                                    "}"+
                                 "}"+
                                 
                             "}";
@@ -228,42 +206,174 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
                 textAreaValuePHPCI += "}"+
 
                 "else if($_GET['act'] == 'update'){"+
-                    "$response = array();"+
-                    "$where = array("+
-                        "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"')"+
-                    ");"+
-                    "$set = array(";
+                    "$response = array();";
+                    textAreaValuePHPCI += "$this->form_validation->set_rules('uniq_"+ namaTableStorage +"', 'uniq_"+ namaTableStorage +"', 'required');";
                     for (let i = 0; i < jumlahFildStorage; i++) {
                         let formInputType = $(".form-input-type-" + i).val();
-                        textAreaValuePHPCI += "'"+ formInputType +"' => $this->input->post('"+ formInputType +"'),";
-                    }
-                    textAreaValuePHPCI += ");";
-                    for (let i = 0; i < jumlahFildStorage; i++) {
-                        let formInputType = $(".form-input-type-" + i).val();
+                        let formSeleteType2 = $(".form-select-type-" + i + "").val();
+                        if (formSeleteType2 == "text") {
                         textAreaValuePHPCI += "$this->form_validation->set_rules('"+ formInputType +"', '"+ formInputType +"', 'required');";
+                        textAreaValuePHPCI += "if($this->form_validation->run() == true){";
+                                for (let i = 0; i < jumlahFildStorage; i++) {
+                                    let formInputType6 = $(".form-input-type-" + i).val();
+                                    let formSeleteType6 = $(".form-select-type-" + i + "").val();
+                                    if (formSeleteType6 == "file") {
+                                        textAreaValuePHPCI += "if($_FILES['"+formInputType6+"']['name'] == null || $_FILES['"+formInputType6+"']['name'] == ''){"+
+                                            "$where = array("+
+                                                "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"')"+
+                                            ");"+
+                                            "$set = array(";
+                                            for (let i = 0; i < jumlahFildStorage; i++) {
+                                                let formInputType7 = $(".form-input-type-" + i).val();
+                                                let formSeleteType7 = $(".form-select-type-" + i + "").val();
+                                                if (formSeleteType7 == "text") {
+                                                            textAreaValuePHPCI += "'"+ formInputType7 +"' => $this->input->post('"+ formInputType7 +"'),";
+                                                }
+                                            }
+                                            textAreaValuePHPCI += ");"+
+                                            "$queryLogin = $this->crud_function_model->updateData('"+ namaTableStorage +"', $set, $where);"+
+                                            "$message =  array("+
+                                                "'status' => '1',"+
+                                                "'message' => 'input berhasil'"+
+                                            ");"+
+                                            "array_push($response, $message);"+
+                                        "}else {"+
+                                        
+
+
+                                            "$rand = rand(00000000000000000000,99999999999999999999);"+
+                                            "$config_upload = array("+
+                                                "'file_name' => 'beritajatim_com'.$rand.'.jpg',"+
+                                                "'upload_path' => './uploads/',"+
+                                                "'allowed_types' => 'gif|jpg|png|jpeg|gif'"+
+                        
+                                            ");"+
+                                            "$this->load->library('upload', $config_upload);";
+                                            
+                                            for (let i = 0; i < jumlahFildStorage; i++) {
+                                                let formInputType8 = $(".form-input-type-" + i).val();
+                                                let formSeleteType8 = $(".form-select-type-" + i + "").val();
+                                                if (formSeleteType8 == "file") {
+                                                    textAreaValuePHPCI += "if ( ! $this->upload->do_upload('"+ formInputType8 +"')){"+
+                                                        "$message =  array("+
+                                                            "'status' => '2',"+
+                                                            "'message' => $this->upload->display_errors()"+
+                                                        ");"+
+                                                        "array_push($response, $message);"+
+                                                    "}else {"+
+                                                    "$whereParamDelete    = array("+
+                                                        "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"')"+
+                                                    ");"+
+                                                        "$queryDataReadDelete = $this->crud_function_model->readData('"+ namaTableStorage +"', '', $whereParamDelete, '');"+
+                                                        "foreach ($queryDataReadDelete as $item) {"+
+                                                            "unlink('./uploads/up/' . $item['"+ formInputType8 +"']);"+
+                                                        "}"+
+                                                        "$config_risize = array("+
+                                                            "'image_library' => 'gd2',"+
+                                                            "'source_image' => './uploads/'.$this->upload->data('file_name'),"+
+                                                            "'new_image' => './uploads/up/',"+
+                                                            "'create_thumb' => FALSE,"+
+                                                            "'maintain_ratio' => TRUE,"+
+                                                            "'width' => 500,"+
+                                                            "'height' => 500"+
+                                                        ");"+
+                                                        "$this->load->library('image_lib', $config_risize);"+
+                                                        "$this->image_lib->resize();"+
+                                                        "if ( ! $this->image_lib->resize())"+
+                                                        "{"+
+                                                            "$message    = array("+
+                                                            "'status' => '2',"+
+                                                            "'message' => $this->image_lib->display_errors()"+
+                                                            ");"+
+                                                            "array_push($response, $message);"+
+                                                        "} else {"+
+                                                            "unlink('./uploads/'.$this->upload->data('file_name'));"+
+                                                            "$message    = array("+
+                                                            "'status_risize' => '1',"+
+                                                            "'message_risize' => 'risize berhasil'"+
+                                                            ");"+
+                                                            "array_push($response, $message);"+
+                        
+                                                            "$config_wm = array("+
+                                                                "'source_image' => './uploads/up/'.$this->upload->data('file_name'),"+
+                                                                "'wm_text' => 'beritajatim.com',"+
+                                                                "'wm_type' => 'text',"+
+                                                                "'wm_font_path' => './system/fonts/texb.ttf',"+
+                                                                "'wm_font_size' => '11',"+
+                                                                "'wm_opacity' => '0,5',"+
+                                                                "'wm_font_color' => 'ffffff',"+
+                                                                "'wm_vrt_alignment' => 'middle',"+
+                                                                "'wm_hor_alignment' => 'center',"+
+                                                                "'wm_padding' => '20'"+
+                                                            ");"+
+                                                            "$this->image_lib->initialize($config_wm);"+
+                                                            "if(!$this->image_lib->watermark())"+
+                                                            "{"+
+                                                                "$message    = array("+
+                                                                    "'status_watermark' => '2',"+
+                                                                    "'message2' => $this->image_lib->display_errors()"+
+                                                                ");"+
+                                                                "array_push($response, $message);"+
+                                                            "} else {"+
+                                                                "$set = array(";
+                                                                for (let i = 0; i < jumlahFildStorage; i++) {
+                                                                    let formInputType82 = $(".form-input-type-" + i).val();
+                                                                    let formSeleteType82 = $(".form-select-type-" + i + "").val();
+                                                                    if (formSeleteType82 == "text") {
+                                                                        textAreaValuePHPCI += "'"+ formInputType82 +"' => $this->input->post('"+ formInputType82 +"'),";
+                                                                    } else if (formSeleteType82 == "file") {
+                                                                        textAreaValuePHPCI += "'"+ formInputType82 +"' => $this->upload->data('file_name'),";
+                                                                    }
+                                                                }
+                                                                textAreaValuePHPCI +=");"+
+
+                                                                    "$where = array("+
+                                                                        "'uniq_"+ namaTableStorage +"' => $this->input->post('uniq_"+ namaTableStorage +"')"+
+                                                                    ");"+
+                                                                    "$queryLogin = $this->crud_function_model->updateData('"+ namaTableStorage +"', $set, $where);"+
+                                            
+                                                                    "array_push($response, $message);"+
+                                                            "}"+
+                                                        "}"+
+                                                        
+                                                    "}";
+                                                }
+                                            }
+
+
+
+                                        textAreaValuePHPCI +="}";
+                                    }
+                                }
+                            textAreaValuePHPCI +="} else {"+
+                                "$message =  array("+
+                                    "'status' => '2',"+
+                                    "'message' => validation_errors()"+
+                                ");"+
+                                "array_push($response, $message);"+
+                            "}";
+                        }
                     }
-                    textAreaValuePHPCI += "if($this->form_validation->run() == true){"+
-                        "$queryLogin = $this->crud_function_model->updateData('"+ namaTableStorage +"', $set, $where);"+
-                        "$message =  array("+
-                            "'status' => '1',"+
-                            "'message' => 'input berhasil'"+
-                        ");"+
-                        "array_push($response, $message);"+
-                    "} else {"+
-                        "$message =  array("+
-                            "'status' => '2',"+
-                            "'message' => validation_errors()"+
-                        ");"+
-                        "array_push($response, $message);"+
-                    "}"+
-                    "echo json_encode($response);"+
+                    
+                    textAreaValuePHPCI += "echo json_encode($response);"+
                 "}"+
                 "else if($_GET['act'] == 'delete'){"+
                     "$response = array();"+
-                    "$param = array("+
+                    "$whereParam = array("+
                         "'uniq_"+ namaTableStorage +"' => $_GET['uniq_"+ namaTableStorage +"'],"+
                     ");"+
-                    "$this->crud_function_model->deleteData('"+ namaTableStorage +"', $param);"+
+
+                    "$queryDataRead = $this->crud_function_model->readData('"+ namaTableStorage +"', '', $whereParam, '');"+
+                    "foreach($queryDataRead as $item){";
+                    for (let i = 0; i < jumlahFildStorage; i++) {
+                        let formInputType = $(".form-input-type-" + i).val();
+                        let formSeleteType = $(".form-select-type-" + i + "").val();
+                        if (formSeleteType == "file") {
+                            textAreaValuePHPCI += "unlink('./uploads/up/'.$item['"+formInputType+"']);";
+                        }
+                    }
+                    textAreaValuePHPCI += "}"+
+                    "$this->crud_function_model->deleteData('"+ namaTableStorage +"', $whereParam);"+
                         "$message =  array("+
                             "'status' => '1',"+
                             "'message' => 'delete berhasil'"+
@@ -373,11 +483,11 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             "beforeSend: function() {"+
             "},"+
             "success : function(data){"+
-                "if(data[2]['status'] == 1){"+
-                    "console.log(data[2]['message']);"+
+                "if(data[1]['status'] == 1){"+
+                    "console.log(data[1]['message']);"+
                     namaTableStorage + "LoadDataAll();"+
                 "} else{"+
-                    "console.log(data[2]['message']);"+
+                    "console.log(data[1]['message']);"+
                 "}"+
             "}"+
         "}).done(function(){"+
@@ -395,11 +505,17 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             "data: '',"+
             "beforeSend: function() {},"+
             "success: function(data) {"+
-                ""+ namaTableStorage +"EditDataResult += \"<form action='#' class='form-edit-"+ namaTableStorage +"-"+ idRandom +"' >\"+"+
-                "\"<input type='text' name='uniq_"+ namaTableStorage +"' class='uniq_"+ namaTableStorage +"' value='\"+data[0]['uniq_"+ namaTableStorage +"']+\"' />\"+";
+                ""+ namaTableStorage +"EditDataResult += \"<form action='#' class='form-edit-"+ namaTableStorage +"-"+ idRandom +"' enctype='multipart/form-data'>\"+"+
+                "\"<input type='text' name='uniq_"+ namaTableStorage +"_edit' class='uniq_"+ namaTableStorage +"' value='\"+data[0]['uniq_"+ namaTableStorage +"']+\"' />\"+";
                 for (let i = 0; i < jumlahFildStorage; i++) {
                     let formInputType = $(".form-input-type-" + i).val();
-                    textAreaValueJs += "\"<input type='text' name='"+ formInputType +"' class='"+ formInputType +"' placeholder='"+ formInputType +"' value='\"+ data[0]['"+ formInputType +"']+\"' />\"+";
+                    let formSeleteType = $(".form-select-type-" + i + "").val();
+                    if (formSeleteType == "text") {
+                        textAreaValueJs += "\"<input type='text' name='"+ formInputType +"_edit' class='"+ formInputType +"' placeholder='"+ formInputType +"' value='\"+ data[0]['"+ formInputType +"']+\"' />\"+";
+                    } else if (formSeleteType == "file") {
+                        textAreaValueJs += "\"<image src='../uploads/up/\"+ data[0]['"+ formInputType +"']+\"'/>\"+"+
+                        "\"<input type='file' name='"+ formInputType +"_edit' class='"+ formInputType +"' placeholder='"+ formInputType +"' value='\"+ data[0]['"+ formInputType +"']+\"' />\"+";
+                    }
                 }
                 textAreaValueJs += "\"<button type='submit' class='btn-"+ namaTableStorage +"-edit-class'>Simpan</button>\"+"+
                 "\"</form>\";"+
@@ -428,12 +544,30 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
         "}).done(function() {});"+
         "});";
     textAreaValueJs += "$(document).on('submit', '.form-edit-" + namaTableStorage + "-" + idRandom + "', function(){"+
-        "$.ajax({"+
+        "var formData = new FormData();"+
+            "let uniq_"+ namaTableStorage +"Text = $('input[name=uniq_"+ namaTableStorage +"_edit]').val();"+
+            "formData.append('uniq_"+ namaTableStorage +"', uniq_"+ namaTableStorage +"Text);";
+
+            for (let i = 0; i < jumlahFildStorage; i++) {
+                let formInputType = $(".form-input-type-" + i).val();
+                let formSeleteType = $(".form-select-type-" + i + "").val();
+                if (formSeleteType == "text") {
+                    textAreaValueJs += "let "+ formInputType +"Text = $('input[name="+ formInputType +"_edit]').val();"+
+                    "formData.append('"+ formInputType +"', "+ formInputType +"Text);";
+                } else if (formSeleteType == "file") {
+                    textAreaValueJs +="let "+ formInputType +"File = $('input[name="+ formInputType +"_edit]');"+
+                    "let "+ formInputType +"FileToUpload = "+ formInputType +"File[0].files[0];"+
+                    "formData.append('"+ formInputType +"', "+ formInputType +"FileToUpload);";
+                }
+            }
+            textAreaValueJs +="$.ajax({"+
             "type : 'POST',"+
             "url : '" + namaTableStorage + "_api/load?act=update',"+
-            "contentType: 'application/x-www-form-urlencoded; charset=utf-8',"+
-            "dataType : 'json',"+
-            "data : $(this).serialize(),"+
+            "data : formData,"+
+            "processData:false,"+
+            "contentType:false,"+
+            "cache:false,"+
+            "dataType: 'json',"+
             "beforeSend: function() {"+
             "},"+
             "success : function(data){"+
