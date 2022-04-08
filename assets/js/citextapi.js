@@ -35,7 +35,8 @@ $(document).on("click", ".btn-form-jumlah-action-class", function() {
             let formInputType = $(".form-input-type-" + i).val();
             textAreaValueDB +="`"+ formInputType +"` VARCHAR(200) NULL DEFAULT '0',";
         }
-        textAreaValueDB += "INDEX `Index 1` (`id_"+ namaTableStorage +"`, `uniq_"+ namaTableStorage +"`)"+
+        textAreaValueDB += "UNIQUE INDEX `uniq` (`uniq_"+ namaTableStorage +"`),"+
+        "INDEX `key` (`id_"+ namaTableStorage +"`)"+
         ") COLLATE = 'latin1_swedish_ci' ENGINE = InnoDB;";
         textAreaValueDB += "</textarea>";
     $(".value-hasil-db-class").html(textAreaValueDB);
